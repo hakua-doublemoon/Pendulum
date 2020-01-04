@@ -1,0 +1,34 @@
+@startuml FB
+title 倒立振子制御
+
+hide footbox
+
+participant "Start()" as Start
+participant "Update()" as Update
+participant ":HingeJoint" as Hinge
+
+activate Start
+Start -> Update:　Θo=180[°]
+activate Update
+Start -> Update:　Δt=50[ms]
+note right: これらの値は作成時に適当に変わる
+
+deactivate Start
+
+loop
+
+Update -> Hinge:　jointAngle
+activate Hinge
+Hinge --> Update:　Θi
+deactivate Hinge
+
+Update -> Hinge:　motor.motorSpeed = (Θo-Θi)*k/Δt
+activate Hinge
+deactivate Hinge
+
+note right of Update: kは適当な定数
+note right of Update: Δt後にUnityから呼び出される
+
+end loop
+
+@enduml

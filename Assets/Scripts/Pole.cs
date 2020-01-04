@@ -2,10 +2,11 @@
 //using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.IO;
 
 public class Pole : MonoBehaviour
 {
-    const float kk = 0.05F;
+    const float kk = 0.09F;
     const int controll_period = 1000 / 50;
 
     float desired_angle  = 300;
@@ -29,29 +30,41 @@ public class Pole : MonoBehaviour
         if (delta_mill_sec < controll_period) {
             return;
         }
-        //Debug.Log(delta_mill_sec + "passed");
         delta_mill_sec = 0;
+        //Debug.Log(delta_mill_sec + "passed");
 
         float angle_1 = curr_angle_get();
+        //Debug.Log(angle_1);
+        //File.AppendAllText(@"test.txt", curr_time_get() + "," + angle_1 + Environment.NewLine);
+        /*
+        if (curr_time_get() - start_time > 1000) {
+            spin_motor(0, true);
+            return;
+        } 
+        //*/
 
         float delta_angle = desired_angle - angle_1;
+        //float delta_angle = desired_angle;
         float input_speed = delta_angle / (controll_period/1000F);
-        spin_motor((int)(input_speed*kk));
+        spin_motor((int)(input_speed*kk), false);
 
         //Debug.Log(input_speed);
-        //Debug.Log(angle_1);
         if (angle_1 > check_angle) {
             check_angle = 3600;
             Debug.Log(curr_time_get() - start_time);
         }
     }
 
-    private void spin_motor(int velocity)
+    private void spin_motor(int velocity, bool is_release)
     {
         HingeJoint2D hinge = this.GetComponent<HingeJoint2D>();
         JointMotor2D motor = hinge.motor;
         motor.motorSpeed = velocity;
         hinge.motor = motor;
+
+        if (is_release) {
+            hinge.useMotor = false;
+        }
     }
 
     private int ellapse_time_get()
